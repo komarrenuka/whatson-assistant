@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            textarea {
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Text to Speech</h1>
+
+    <textarea id="textinput" rows="4" cols="50" placeholder="Enter your text here..."></textarea>
+    <br>
+    <button onclick="speak()">🔊 Convert Text to Speech</button>
+
+    <script>
+        const API_KEY = "LC_dNjsnvl48gi0OvgYnzHfE5ElvriQ7_6mTq29PvdAC";
+        const API_URL = "https://api.au-syd.text-to-speech.watson.cloud.ibm.com/v1/synthesize?voice=en-US_AllisonV3Voice";
+
+        async function speak() {
+            const text = document.getElementById("textinput").value;
+
+            if (!text.trim()) {
+                alert("Please enter some text.");
+                return;
+            }
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "audio/mp3",
+                    "Authorization": "Basic " + btoa("apikey:" + API_KEY),
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (!response.ok) {
+                alert("Error with Text-to-Speech request");
+                return;
+            }
+
+            const audioData = await response.blob();
+            const audioUrl = URL.createObjectURL(audioData);
+            const audio = new Audio(audioUrl);
+            audio.play();
+        }
+    </script>
+</body>
+</html>
